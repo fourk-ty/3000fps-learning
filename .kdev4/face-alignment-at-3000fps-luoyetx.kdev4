@@ -1,0 +1,20 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00B\x00f\x00a\x00c\x00e\x00-\x00a\x00l\x00i\x00g\x00n\x00m\x00e\x00n\x00t\x00-\x00a\x00t\x00-\x003\x000\x000\x000\x00f\x00p\x00s\x00-\x00l\x00u\x00o\x00y\x00e\x00t\x00x)
+
+[CMake]
+Build Directory Count=1
+Current Build Directory Index=0
+ProjectRootRelative=./
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=file:///home/dc/FACE/projs/face-alignment-at-3000fps-luoyetx/build_
+Build Type=Debug
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=
+
+[Defines And Includes][Compiler]
+Name=GCC
+Path=gcc
+Type=GCC
