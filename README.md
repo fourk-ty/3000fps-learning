@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 face-alignment-at-3000fps
 =========================
 
@@ -62,3 +63,7 @@ BSD 3-Clause
 [opencv]: http://opencv.org/
 [cmake]: http://www.cmake.org/
 [vs]: https://www.visualstudio.com/
+=======
+# 3000fps-learning
+learning process of 3000fps. original code is from luoyety 
+>>>>>>> 479add310dfd1dee91e787c446f0de7aba70ed99

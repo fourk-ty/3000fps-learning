@@ -3,6 +3,8 @@
 #include <cassert>
 #include "lbf/rf.hpp"
 
+#include<iostream>
+
 using namespace cv;
 using namespace std;
 
@@ -213,6 +215,11 @@ void RandomForest::Train(vector<Mat> &imgs, vector<Mat> &gt_shapes, vector<Mat> 
 
 Mat RandomForest::GenerateLBF(Mat &img, Mat &current_shape, BBox &bbox, Mat &mean_shape) {
     Mat_<int> lbf(1, landmark_n*trees_n);
+
+    /*//-------DC : show the lbf's substance : (1,408)
+    std::cout << "lbf :: " <<lbf << std::endl;
+    std::cout << "lbf size: " << lbf.rows << " " << lbf.cols << endl; */
+
     double scale;
     Mat_<double> rotate;
     calcSimilarityTransform(bbox.Project(current_shape), mean_shape, scale, rotate);

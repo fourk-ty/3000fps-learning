@@ -4,6 +4,9 @@
 #include "lbf/common.hpp"
 #include<iostream>
 
+
+#include "opencv2/imgproc/imgproc.hpp"
+
 using namespace cv;
 using namespace std;
 using namespace lbf;
@@ -12,7 +15,16 @@ CascadeClassifier cc("../model/haarcascade_frontalface_alt.xml");
 
 Rect getBBox(Mat &img, Mat_<double> &shape) {
     vector<Rect> rects;
+
+    /* DC 2017.8.16pm------------------------ */
+    equalizeHist(img, img);
+    /*---------------------- */
+
     cc.detectMultiScale(img, rects, 1.05, 2, CV_HAAR_SCALE_IMAGE, Size(30, 30));
+    
+    /* DC 2017.8.16pm------------------------ */
+    std::cout << "#face: " << rects.size() << std::endl;
+    
     if (rects.size() == 0) return Rect(-1, -1, -1, -1);
     double center_x, center_y, x_min, x_max, y_min, y_max;
     center_x = center_y = 0;
@@ -28,10 +40,11 @@ Rect getBBox(Mat &img, Mat_<double> &shape) {
     }
     center_x /= shape.rows;
     center_y /= shape.rows;
+    // ------------DC 2017.8.17am: 以上14行代码用来计算shape的中心坐标和覆盖矩形区域的顶点。
 
     for (int i = 0; i < rects.size(); i++) {
         Rect r = rects[i];
-        if (x_max - x_min > r.width*1.5) continue;
+        if (x_max - x_min > r.width*1.5) continue;      // 2017.8.17am修改1.5变为2
         if (y_max - y_min > r.height*1.5) continue;
         if (abs(center_x - (r.x + r.width / 2)) > r.width / 2) continue;
         if (abs(center_y - (r.y + r.height / 2)) > r.height / 2) continue;
@@ -78,6 +91,11 @@ void genTxt(const string &inTxt, const string &outTxt) {
         fclose(tmp);
 
         Mat img = imread(img_path, CV_LOAD_IMAGE_GRAYSCALE);
+
+        //---DC:2017.08.17pm:----show the gt_shape
+        cout << "What is gt_shape: " << gt_shape << endl;
+
+
         Rect bbox = getBBox(img, gt_shape);
 
         if (bbox.x != -1) {

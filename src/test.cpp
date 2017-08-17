@@ -6,6 +6,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <iostream>
+#include<string>
 
 using namespace cv;
 using namespace std;
@@ -15,7 +16,7 @@ using namespace lbf;
 Mat getinitShape(vector<Mat> &gt_shapes, vector<BBox> &bboxes);
 
 // dirty but works
-void parseTxt(string &txt, vector<Mat> &imgs, vector<Mat> &gt_shapes, vector<BBox> &bboxes);
+void parseTxt(string &txt, vector<Mat> &imgs, vector<Mat> &gt_shapes, vector<BBox> &bboxes); // by DC: train and test are from class LbfCascador(in lbf.hpp), thus share functions. 
 
 int test(void) {
     Config &config = Config::GetInstance();
@@ -53,12 +54,19 @@ int run(void) {
     lbf_cascador.Read(model);
     fclose(model);
 
-    for (int i = 0; i < N; i++) {
+    /* ------------DC: 2017.8.15pm
+    */
+    std:: cout << "N =  " << N << std::endl;
+
+    for (int i = 0; i < N; i++) 
+    {
         fscanf(fd, "%s", img_path);
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 4; j++) 
+        {
             fscanf(fd, "%lf", &bbox[j]);
         }
-        for (int j = 0; j < landmark_n; j++) {
+        for (int j = 0; j < landmark_n; j++) 
+        {
             fscanf(fd, "%lf%lf", &x[j], &y[j]);
         }
         Mat img = imread(img_path);
@@ -120,13 +128,14 @@ int run(void) {
         std::cout << "shape = "<< std::endl << " "  << shape << std::endl;
 
 
+        std::string path_save = "../Results/";
         namedWindow("init", CV_WINDOW_NORMAL);
         imshow("init", init_img);
-        imwrite("../Results/init.jpg", init_img);
+        imwrite(path_save + "init.jpg", init_img);
 
         namedWindow( "result", CV_WINDOW_NORMAL );
         imshow("result", img);
-        imwrite( "../Results/result.jpg", img);
+        imwrite( path_save + "new.jpg", img);
         //cvSaveImage("../result.jpg",img);
         waitKey(0);
     }

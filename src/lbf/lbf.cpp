@@ -3,6 +3,8 @@
 #include "liblinear/linear.h"
 #include "lbf/lbf.hpp"
 
+#include<iostream>
+
 using namespace cv;
 using namespace std;
 
@@ -146,16 +148,33 @@ void LbfCascador::Test(vector<Mat> &imgs, vector<Mat> &gt_shapes, vector<BBox> &
     TIMER_BEGIN
         for (int i = 0; i < N; i++) {
             current_shapes[i] = bboxes[i].ReProject(mean_shape);
+
+            //---look at current_shape --------DC:2017.08.15am
+            /*
+            std::cout << "current+_shape" << std::endl;
+            std::cout << current_shapes[i].rows << std::endl;
+            std::cout << current_shapes[i].cols << std::endl;
+            */
         }
         double e = calcMeanError(gt_shapes, current_shapes);
         LOG("initial error = %.6lf", e);
         double scale;
         Mat rotate;
+
+        /* ----------------DC: 2017.8.15am"
+        std::cout << "stage_n:  " << stages_n << std::endl; 
+        */
+
+
         for (int k = 0; k < stages_n; k++) {
             for (int i = 0; i < N; i++) {
                 // generate lbf
                 Mat lbf = random_forests[k].GenerateLBF(imgs[i], current_shapes[i], bboxes[i], mean_shape);
                 // update current_shapes
+
+                /*//------------show the lbf --------------DC2017.8.15am
+                std::cout << "lbf size:  " << lbf.rows << " " << lbf.cols << std::endl;*/
+
                 Mat delta_shape = GlobalRegressionPredict(lbf, k);
                 delta_shape = delta_shape.reshape(0, landmark_n);
                 current_shapes[i] = bboxes[i].Project(current_shapes[i]);
@@ -246,13 +265,35 @@ void LbfCascador::GlobalRegressionTrain(vector<Mat> &lbfs, vector<Mat> &delta_sh
 
 
 Mat LbfCascador::GlobalRegressionPredict(const Mat &lbf, int stage) {
-    const Mat_<double> &weight = (Mat_<double>)gl_regression_weights[stage];
-    Mat_<double> delta_shape(weight.rows / 2, 2);
+
+    /*std::cout << "lbf : " << lbf.rows << " " << lbf.cols << std::endl; //lbf : (1,408)*/
+
+
+    const Mat_<double> &weight = (Mat_<double>)gl_regression_weights[stage]; // 这里weight的维度为（136,6528）
+
+    /*//----------show weight -------DC 2017.8.15am
+    std::cout << "show weight" << std::endl;
+    std::cout << weight.rows << std::endl;  
+    std::cout << weight.cols << std::endl; */
+
+
+
+
+    Mat_<double> delta_shape(weight.rows / 2, 2); //计算得到的是（68,2）
     const double *w_ptr = NULL;
-    const int *lbf_ptr = lbf.ptr<int>(0);
+    const int *lbf_ptr = lbf.ptr<int>(0); // ???????????????该句语法存疑-->这里是Mat类型指针ptr的使用，即MAT.ptr<数据类型>(所指位置)
+
+    //
+    /*
+    std::cout << "what is lbf.ptr : ";
+    std::cout << lbf.ptr<int> << std::endl;
+    */
+
 
     //#pragma omp parallel for num_threads(2) private(w_ptr)
-    for (int i = 0; i < delta_shape.rows; i++) {
+    for (int i = 0; i < delta_shape.rows; i++) 
+    // ------------------DC: for each landmark, compute its delta_shape
+    {
         w_ptr = weight.ptr<double>(2 * i);
         double y = 0;
         for (int j = 0; j < lbf.cols; j++) y += w_ptr[lbf_ptr[j]];
